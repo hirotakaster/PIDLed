@@ -1,0 +1,52 @@
+#include <Arduino.h>
+#include <PID_v1.h>
+
+// register 470
+#define LED_PIN 9
+#define CDS_PIN A0
+
+int counter = 0;
+int vec = 1;
+
+float Kp = 1.1;            // Proportional gain
+float Ki = 0.0;             // Integral gain
+float Kd = 0.0;           // Differential gain
+double Setpoint, Input, Output;
+PID myPID(&Input, &Output, &Setpoint, Kp, Ki, Kd, DIRECT);
+
+int readRds() {
+    int val = 0;
+    for (int i = 0; i < 100; i++)
+        val += analogRead(CDS_PIN);
+    val /= 100;
+    return map(val, 0, 1023, 0, 255);
+}
+
+void setup() {
+    Setpoint = 40;
+
+    Input = readRds();
+    Serial.begin(115200);                                // Initialise serial communications at 9600 bps
+    myPID.SetMode(AUTOMATIC);                          // Turn on the PID control
+    myPID.SetSampleTime(10);                   // Assign the sample rate of the control
+}
+
+void loop() {
+    delay(10);
+    if (counter >= 100) return;
+
+
+    Input = readRds();
+
+    // Serial.print(counter); Serial.print("\t");
+    Serial.print(Input); Serial.print(",");
+
+    myPID.Compute();                                   // Calculates the PID output at a specified sample time
+    analogWrite(LED_PIN, Output);                      // Power the LED
+
+    Serial.print(Output); Serial.print("");
+    Serial.println("");
+
+    counter++;
+
+}

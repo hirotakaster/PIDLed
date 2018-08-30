@@ -1,0 +1,34 @@
+#include <Arduino.h>
+#include <PID_v1.h>
+
+#define LED_PIN 9
+#define CDS_PIN A0
+
+int counter = 0;
+int vec = 1;
+
+int readRds() {
+    int val = 0;
+    for (int i = 0; i < 100; i++)
+        val += analogRead(CDS_PIN);
+    val /= 100;
+    return map(val, 0, 120, 0, 255);
+}
+
+void setup() {
+    Serial.begin(115200);
+}
+
+void loop() {
+    int val = readRds();
+    delay(10);
+    Serial.print(val); Serial.print(",");
+    Serial.print(counter); Serial.print("");
+    Serial.println("");
+
+    analogWrite(LED_PIN, counter);
+    counter += vec;
+    if (counter >= 255 || counter <= 0) {
+        vec *= -1;
+    }
+}
