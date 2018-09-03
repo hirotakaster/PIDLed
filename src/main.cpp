@@ -1,6 +1,3 @@
-<<<<<<< Updated upstream
-https://github.com/hirotakaster/PIDLed
-=======
 #include <Arduino.h>
 
 // PIDのゲイン設定
@@ -46,4 +43,3 @@ void loop() {
   Serial.print(pwm);
   Serial.println("");
 }
->>>>>>> Stashed changes
